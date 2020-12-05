@@ -1,0 +1,55 @@
+.SendMessage-container{
+    bottom: 0;
+    position: absolute;
+    display: flex;
+    background-color: #f0f0f0;
+    height: 70px;
+    width: 100%;
+}
+.Sendmessage-icon-container{
+    width: 41px;
+    height: 41px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    margin: 0px 10px;
+    float: right;
+    font-size: 23px;
+    color: #919191;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+.Sendmessage-icon-container:active{
+    background-color: #e5ddd5;
+}
+
+
+
+.sendmessage-input-container{
+    padding: 5px 10px;
+    width: 90%;
+    margin-top: auto;
+    margin-bottom: auto;
+    height: 41%;
+    background-color: white;
+    border-radius: 20px;
+}
+.sendmessage-input{
+    border: none;
+    text-decoration: none;
+    width: 98%;
+    height: 100%;
+    margin-top: auto;
+    margin-bottom: auto;
+    background-color: white;
+    display: flex;
+    outline: none;
+    border-radius: 20px;
+}
+.sendIcon{
+    margin-left: auto;
+    margin-right: 10px;
+    margin-left: 10px;
+}

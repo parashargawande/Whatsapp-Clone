@@ -1,0 +1,62 @@
+.TopRightBar-container{
+    height: 53px;
+    display: flex;
+    background-color: #ededed;
+    width: 100%;
+    top: 0;
+    position: absolute;
+}
+
+.Group-image{
+    height: 50px;
+    width: 50px;
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: 10px;
+    border-radius: 50%;
+}
+
+.Group-info-container{
+    display: flex;
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: 15px;
+    width: 80%;
+    flex-wrap: wrap;
+    cursor: pointer;
+}
+
+.Group-Title{
+    width: 100%;
+    text-align: start;
+    font-weight: 500;
+}
+.Group-icons{
+    display: flex;
+}
+.Group-Description{
+    font-weight: 400;
+    color: #828080;
+    font-size: smaller;
+}
+.Group-more-icons{
+    display: flex;
+    margin-left: auto;
+}
+.Group-icon-container{
+    width: 41px;
+    height: 41px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    float: right;
+    font-size: 23px;
+    color: #919191;
+    margin-top: auto;
+    margin-bottom: auto;
+    border-radius: 50%;
+    cursor: pointer;
+}
+.Group-icon-container:active{
+    background-color: #e5ddd5;
+}
