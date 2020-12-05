@@ -1,0 +1,32 @@
+.App {
+  text-align: center;
+}
+
+.Container{
+  width: 90vw;
+  height: 90vh;
+  border: 1px solid;
+  margin: auto;
+  background-color: #ededed;
+  display: flex;
+}
+
+.Left-Container{
+  width: 30%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.Right-Container{
+  width: 70%;
+  height: 100%;
+  flex-wrap: wrap;
+  display: flex;
+  background-color: #e5ddd5;
+  align-content: flex-start;
+  position: relative;
+}
+.TopRight-Bar-Container{
+  height: 53px;
+  border: 1px solid;
+}

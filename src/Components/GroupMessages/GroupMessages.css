@@ -1,0 +1,49 @@
+
+.GroupMessages-container{
+    overflow-y: auto;
+    /* border: 1px solid; */
+    height: 80%;
+    margin-top: 52px;
+    padding-bottom: 10px;
+    box-sizing: border-box;
+}
+
+.Group-info-message{
+    background-color: rgb(225 243 251);
+    width: max-content;
+    padding: 3px 12px;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 8px;
+    margin-bottom: 6px;
+    margin-top: 6px;
+    font-size: smaller;
+}
+.Group-message{
+    word-break: break-all;
+    width: 40%;
+    padding: 3px 12px;
+    border-radius: 8px;
+    font-size: medium;
+    margin-bottom: 6px;
+    margin-top: 6px;
+    width: fit-content;
+    max-width: 40%;
+}
+.incoming{
+    background-color: white;
+    margin-left: 10%;
+    margin-right: auto;
+}
+.outgoing{
+    background-color: #dcf8c6;
+    margin-left: auto;
+    margin-right: 10%;
+}
+
+.Group-message-time{
+    width: 100%;
+    text-align: end;
+    font-size: 0.7rem;
+    color: #919191;
+}

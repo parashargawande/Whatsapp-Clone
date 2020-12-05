@@ -1,0 +1,43 @@
+.Chat-container{
+    height: 60px;
+    border-bottom: 1px solid #ededed;
+    display: flex;
+    padding: 10px;
+    cursor: pointer;
+}
+.Chat-container:hover{
+    background-color: #f6f6f6;
+    /* background-color: #ededed; */
+}
+
+.Chat-Info-Container{
+    display: flex;
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: 15px;
+    width: 80%;
+    flex-wrap: wrap;
+}
+.Chat-Image{
+    height: 50px;
+    width: 50px;
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: 10px;
+    border-radius: 50%;
+}
+.Chat-Title{
+    width: 50%;
+    text-align: start;
+    font-weight: 500;
+}
+.Chat-Message{
+    font-weight: 400;
+    color: #828080;
+}
+.Chat-Date{
+    width: 50%;
+    text-align: end;
+    font-size: smaller;
+    color: #919191;
+}

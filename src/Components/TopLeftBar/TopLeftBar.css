@@ -1,0 +1,42 @@
+.TopLeft-Bar-Container{
+    height: 53px;
+    display: flex;
+    border-right: 1px solid #e5ddd5;
+    /* color: #ededed; */
+}
+.Left-Section{
+    width: 50%;
+    display: flex;
+    padding-left: 20px;
+}
+.Profile-Image{
+    width: 45px;
+    height: 45px;
+    vertical-align: middle;
+    margin-top: auto;
+    margin-bottom: auto;
+    cursor: pointer;
+}
+.Right-Section{
+    width: 50%;
+    display: flex;
+    justify-content: flex-end;
+}
+.icon-container{
+    width: 41px;
+    height: 41px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    float: right;
+    font-size: 23px;
+    color: #919191;
+    margin-top: auto;
+    margin-bottom: auto;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+.icon-container:active{
+    background-color: #e5ddd5;
+}
