@@ -1,0 +1,39 @@
+.Authentication-container{
+    width: 100%;
+    align-self: center;
+}
+.Authentication-Bar{
+    display: flex;
+    justify-content: space-around;
+}
+.Authentication-tab{
+    width: 50%;
+    height: 40px;
+    margin-top: auto;
+    margin-bottom: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    background-color: #e5ddd5;
+    cursor: pointer;
+}
+.act{
+    background-color: #ededed;
+}
+
+
+.Authentication-card{
+    border: 1px solid;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 1px 2px 15px black;
+}
+
+.input-field-placeholder{
+    padding: 10px 10px;
+    height: 100%;
+}
+.input-field{
+
+}

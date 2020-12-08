@@ -1,0 +1,20 @@
+.Menu-container{
+    z-index: 999;
+    /* border: 1px solid; */
+    position: absolute;
+    right: 10px;
+    width: max-content;
+    margin-top: 52px;
+    text-align: left;
+    background-color: white;
+    box-shadow: 1px 6px 7px #b3b1b1;
+    padding: 8px 0px;
+}
+.Menu-items{
+    padding: 5px 30px;
+    color: #5f5d5d;
+    cursor: pointer;
+}
+.Menu-items:hover{
+    background-color: #f6f6f6;
+}

@@ -37,6 +37,6 @@
     border-radius: 50%;
 }
 
-.icon-container:active{
+.active, .icon-container:active{
     background-color: #e5ddd5;
 }

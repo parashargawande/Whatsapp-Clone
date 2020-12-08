@@ -1,0 +1,18 @@
+.Registration-container{
+    width: 100%;
+    align-self: center;
+}
+
+.Registration-card{
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.input-field-placeholder{
+    padding: 10px 10px;
+    height: 100%;
+}
+.input-field{
+
+}
