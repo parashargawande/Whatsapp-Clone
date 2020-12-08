@@ -71,7 +71,9 @@ function App() {
     <NewGroupSlider show={newGroupSlider} />
     {openedChat ?
       <div className="Right-Container">
+        
         <TopRightBar user={user} openedChat={openedChat} />
+
         <GroupMessages user={user} openedChat={openedChat} />
         
       </div> :

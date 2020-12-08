@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './GroupMessages.css';
 import firebase from '../../Firebase';
 import SendMessage from './SendMessage/SendMessage';
@@ -6,10 +6,15 @@ import SendMessage from './SendMessage/SendMessage';
 const GroupMessages = (props) => {
 
     const [senderChats, setsenderChats] = useState([]);
-    const [receiversChats, setreceiversChats] = useState([]);
-    const [newMessage, setNewMessage] = useState(false);
+    const messagesEndRef = useRef(null)
 
     useEffect(() => {
+        messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
+    }, [senderChats]);
+
+    useEffect(() => {
+        console.log('[GroupMessages.js] setting observer');
+        getSendersChats();
         const query = firebase.firestore().collection('users').doc(props.user.uid).collection('To').doc(props.openedChat.id);
         const observer = query.onSnapshot(querySnapshot => {
             console.log(`Received query snapshot of size ${querySnapshot.size}`);
@@ -23,8 +28,11 @@ const GroupMessages = (props) => {
         }, err => {
             console.log(`Encountered error: ${err}`);
         });
-        return () => observer();
-    }, []);
+        return () => {
+            console.log('[GroupMessages.js] cleaning observer');
+            observer();
+        }
+    }, [props.openedChat.id]);
 
     const getSendersChats = () => {
         const senderSnapshot = firebase.firestore().collection('users').doc(props.user.uid).collection('To').doc(props.openedChat.id).get();
@@ -42,32 +50,6 @@ const GroupMessages = (props) => {
         });
     }
 
-    const getReciversChats = () => {
-        const receiversSnapshot = firebase.firestore().collection('users').doc(props.openedChat.id).collection('To').doc(props.user.uid).get();
-        receiversSnapshot.then((snap) => {
-            let chats = snap.data();
-            if (chats) {
-                console.log(chats);
-                setreceiversChats(chats.messages);
-            } else {
-                setreceiversChats([]);
-            }
-        }).catch((e) => {
-            console.log(e.message);
-            setreceiversChats([]);
-        });
-    }
-
-
-    useEffect(() => {
-        console.log('[GroupMessages.js] useEffect hook');
-
-        getSendersChats();
-
-        getReciversChats();
-
-    }, [props.openedChat, newMessage]);
-
     const db = firebase.firestore();
 
     const updateReceiverChats = (message) => {
@@ -83,22 +65,12 @@ const GroupMessages = (props) => {
                 received: true,
                 isSender: false
             }];
-            setreceiversChats(updatedReceiversChats);
+
             const postMsg = db.collection('users').doc(props.openedChat.id).collection('To').doc(props.user.uid).set({ messages: updatedReceiversChats });
             return postMsg;
         }).catch((e) => {
             console.log(e.message);
-            setreceiversChats([]);
         });
-
-
-        // const postMsg = db.collection('users').doc(props.openedChat.id).collection('To').doc(props.user.uid).set({ messages: updatedReceiversChats });
-        // return postMsg;
-        // postMsg.then(data => {
-        //     setreceiversChats(updatedReceiversChats);
-        // }).catch(e => {
-        //     console.log(e.message);
-        // });
     }
     const updateSendersChats = (updatedSendersChats) => {
         const sendMsg = db.collection('users').doc(props.user.uid).collection('To').doc(props.openedChat.id).set({ messages: updatedSendersChats });
@@ -131,38 +103,11 @@ const GroupMessages = (props) => {
                 console.log(e.message);
             });
 
-            // let senderData = {
-            //     message: message,
-            //     dateTime: (new Date()).toISOString(),
-            //     sent: true,
-            //     received: false,
-            //     isSender: true
-            // }
-            // let receiverData = {
-            //     message: message,
-            //     dateTime: (new Date()).toISOString(),
-            //     sent: false,
-            //     received: true,
-            //     isSender: false
-            // }
-            // console.log(props.user);
-            // console.log(props.openedChat);
-            // console.log(senderData);
             return true;
         }
     }
 
     return <div className='GroupMessages-container'>
-        {/* <>
-            <div className='Group-message incoming'>
-                created by 5454545asdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
-            <div className='Group-message-time'>5.00PM</div>
-            </div>
-            <div className='Group-message outgoing'>
-                c
-            <div className='Group-message-time'>5.00PM</div>
-            </div>
-        </> */}
         {
 
             senderChats.map(chat => {
@@ -180,7 +125,7 @@ const GroupMessages = (props) => {
             })
         }
 
-
+        <div ref={messagesEndRef} />
         {/* <div className='Group-info-message'>created by 5454545</div>
         <div className='Group-info-message'>created by 5454545</div>
         <div className='Group-info-message'>created by 5454545</div>
