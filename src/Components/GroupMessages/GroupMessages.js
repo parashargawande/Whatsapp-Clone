@@ -7,30 +7,26 @@ const GroupMessages = (props) => {
 
     const [senderChats, setsenderChats] = useState([]);
     const [receiversChats, setreceiversChats] = useState([]);
-    const [newMessage,setNewMessage] = useState(false);
-
-    const query = firebase.firestore().collection('users').doc(props.user.uid).collection('To');
+    const [newMessage, setNewMessage] = useState(false);
 
     useEffect(() => {
+        const query = firebase.firestore().collection('users').doc(props.user.uid).collection('To').doc(props.openedChat.id);
         const observer = query.onSnapshot(querySnapshot => {
-            console.log(querySnapshot);
             console.log(`Received query snapshot of size ${querySnapshot.size}`);
-            let myDataArray = []
-            querySnapshot.forEach(doc =>
-                myDataArray.push({ ...doc.data() })
-            );
-            console.log(myDataArray);
-            setNewMessage(!newMessage);
+            let chats = querySnapshot.data();
+            if (chats) {
+                console.log(chats);
+                setsenderChats(chats.messages);
+            } else {
+                setsenderChats([]);
+            }
         }, err => {
             console.log(`Encountered error: ${err}`);
         });
-        return ()=>observer();
+        return () => observer();
     }, []);
 
-
-    useEffect(() => {
-        console.log('[GroupMessages.js] useEffect hook');
-
+    const getSendersChats = () => {
         const senderSnapshot = firebase.firestore().collection('users').doc(props.user.uid).collection('To').doc(props.openedChat.id).get();
         senderSnapshot.then((snap) => {
             let chats = snap.data();
@@ -44,7 +40,9 @@ const GroupMessages = (props) => {
             console.log(e.message);
             setsenderChats([]);
         });
+    }
 
+    const getReciversChats = () => {
         const receiversSnapshot = firebase.firestore().collection('users').doc(props.openedChat.id).collection('To').doc(props.user.uid).get();
         receiversSnapshot.then((snap) => {
             let chats = snap.data();
@@ -58,7 +56,17 @@ const GroupMessages = (props) => {
             console.log(e.message);
             setreceiversChats([]);
         });
-    }, [props.openedChat,newMessage]);
+    }
+
+
+    useEffect(() => {
+        console.log('[GroupMessages.js] useEffect hook');
+
+        getSendersChats();
+
+        getReciversChats();
+
+    }, [props.openedChat, newMessage]);
 
     const db = firebase.firestore();
 
@@ -159,12 +167,12 @@ const GroupMessages = (props) => {
                 if (chat.isSender === true) {
                     return <div key={chat.dateTime} className='Group-message outgoing'>
                         {chat.message}
-                        <div className='Group-message-time'>{new Date(chat.dateTime).toLocaleString('en-US', { hour: 'numeric',minute: 'numeric', hour12: true })}</div>
+                        <div className='Group-message-time'>{new Date(chat.dateTime).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}</div>
                     </div>
                 } else {
                     return <div key={chat.dateTime} className='Group-message incoming'>
                         {chat.message}
-                        <div className='Group-message-time'>{new Date(chat.dateTime).toLocaleString('en-US', { hour: 'numeric',minute: 'numeric', hour12: true })}</div>
+                        <div className='Group-message-time'>{new Date(chat.dateTime).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}</div>
                     </div>
                 }
             })
