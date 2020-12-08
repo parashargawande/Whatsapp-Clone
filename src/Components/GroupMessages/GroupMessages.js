@@ -70,15 +70,35 @@ const GroupMessages = (props) => {
 
     const db = firebase.firestore();
 
-    const updateReceiverChats = (updatedReceiversChats) => {
+    const updateReceiverChats = (message) => {
 
-        const postMsg = db.collection('users').doc(props.openedChat.id).collection('To').doc(props.user.uid).set({ messages: updatedReceiversChats });
-        return postMsg;
-        postMsg.then(data => {
+        const receiversSnapshot = firebase.firestore().collection('users').doc(props.openedChat.id).collection('To').doc(props.user.uid).get();
+        return receiversSnapshot.then((snap) => {
+            let chats = snap.data();
+
+            let updatedReceiversChats = [...chats.messages, {
+                message: message,
+                dateTime: (new Date()).toISOString(),
+                sent: false,
+                received: true,
+                isSender: false
+            }];
             setreceiversChats(updatedReceiversChats);
-        }).catch(e => {
+            const postMsg = db.collection('users').doc(props.openedChat.id).collection('To').doc(props.user.uid).set({ messages: updatedReceiversChats });
+            return postMsg;
+        }).catch((e) => {
             console.log(e.message);
+            setreceiversChats([]);
         });
+
+
+        // const postMsg = db.collection('users').doc(props.openedChat.id).collection('To').doc(props.user.uid).set({ messages: updatedReceiversChats });
+        // return postMsg;
+        // postMsg.then(data => {
+        //     setreceiversChats(updatedReceiversChats);
+        // }).catch(e => {
+        //     console.log(e.message);
+        // });
     }
     const updateSendersChats = (updatedSendersChats) => {
         const sendMsg = db.collection('users').doc(props.user.uid).collection('To').doc(props.openedChat.id).set({ messages: updatedSendersChats });
@@ -102,29 +122,11 @@ const GroupMessages = (props) => {
                 isSender: true
             }];
 
-            let updatedReceiversChats = [...receiversChats, {
-                message: message,
-                dateTime: (new Date()).toISOString(),
-                sent: false,
-                received: true,
-                isSender: false
-            }];
-
 
             updateSendersChats(updatedSendersChats).then(data => {
-                setsenderChats(updatedSendersChats);
-                return true;
+                return setsenderChats(updatedSendersChats);
             }).then(senderSucess => {
-                if (senderSucess) {
-                    updateReceiverChats(updatedReceiversChats);
-                    return true;
-                } else {
-                    return false;
-                }
-            }).then(receiverSucess => {
-                if (receiverSucess) {
-                    setreceiversChats(updatedReceiversChats);
-                }
+                return updateReceiverChats(message);
             }).catch(e => {
                 console.log(e.message);
             });
