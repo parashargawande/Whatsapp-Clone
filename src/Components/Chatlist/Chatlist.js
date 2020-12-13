@@ -14,6 +14,21 @@ const Chatlist = (props) => {
   // { id: 3, title: '3', date: 'mon1/3', lastMessage: 'message', image: null }
 
   useEffect(()=>{
+    const query = firebase.firestore().collection('users').doc(props.user.uid);
+    const observer = query.onSnapshot(querySnapshot => {
+        console.log(`Received query snapshot of size ${querySnapshot.size}`);
+        let chats = querySnapshot.data();
+        if (chats) {
+            console.log(chats);
+            // setsenderChats(chats.messages);
+        } else {
+            // setsenderChats([]);
+        }
+    }, err => {
+        console.log(`Encountered error: ${err}`);
+    });
+
+
     const snapshot = firebase.firestore().collection('users').get();
     snapshot.then((data)=>{
       console.log();

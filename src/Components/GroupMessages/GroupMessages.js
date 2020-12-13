@@ -2,15 +2,25 @@ import React, { useEffect, useRef, useState } from 'react';
 import './GroupMessages.css';
 import firebase from '../../Firebase';
 import SendMessage from './SendMessage/SendMessage';
+import { useRecordWebcam } from 'react-record-webcam'
+import RecordRTC from 'recordrtc';
+import VideoMessage from './VideoMessage/VideoMessage';
+
 
 const GroupMessages = (props) => {
 
     const [senderChats, setsenderChats] = useState([]);
-    const messagesEndRef = useRef(null)
+    const messagesEndRef = useRef(null);
 
-    useEffect(() => {
+    const [recordWebcam, setrecordWebcam] = useState(false);
+
+    const [requestedChat,setRequestedChat] = useState(null);
+
+    const scrollToBottom = () => {
         messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
-    }, [senderChats]);
+    }
+
+
 
     useEffect(() => {
         console.log('[GroupMessages.js] setting observer');
@@ -22,6 +32,7 @@ const GroupMessages = (props) => {
             if (chats) {
                 console.log(chats);
                 setsenderChats(chats.messages);
+                scrollToBottom();
             } else {
                 setsenderChats([]);
             }
@@ -41,6 +52,7 @@ const GroupMessages = (props) => {
             if (chats) {
                 console.log(chats);
                 setsenderChats(chats.messages);
+                scrollToBottom();
             } else {
                 setsenderChats([]);
             }
@@ -50,9 +62,33 @@ const GroupMessages = (props) => {
         });
     }
 
+    const showHiddenMessage = ()=>{
+        let updatedChats = [...senderChats];
+        updatedChats.forEach((chat, index) => {
+            if (chat.isSender !== true) {
+                if (requestedChat.dateTime === chat.dateTime) {
+                    let newChat = { ...chat };
+                    newChat.reactionRequest = true;
+                    newChat.reactionReceived = true;
+                    updatedChats[index] = newChat;
+                    setsenderChats(updatedChats);
+                    return;
+                }
+            }
+        });
+    }
+
+
+    const recordReaction = (requestedChat) => {
+        
+        setrecordWebcam(!recordWebcam);
+        
+        setRequestedChat(requestedChat);
+    }
+
     const db = firebase.firestore();
 
-    const updateReceiverChats = (message) => {
+    const updateReceiverChats = (message, media, reactionMessage) => {
 
         const receiversSnapshot = firebase.firestore().collection('users').doc(props.openedChat.id).collection('To').doc(props.user.uid).get();
         return receiversSnapshot.then((snap) => {
@@ -63,7 +99,10 @@ const GroupMessages = (props) => {
                 dateTime: (new Date()).toISOString(),
                 sent: false,
                 received: true,
-                isSender: false
+                isSender: false,
+                reactionRequest: reactionMessage,
+                reactionReceived: false,
+                media: media
             }];
 
             const postMsg = db.collection('users').doc(props.openedChat.id).collection('To').doc(props.user.uid).set({ messages: updatedReceiversChats });
@@ -83,47 +122,82 @@ const GroupMessages = (props) => {
         });
     }
 
-    const sendMessage = (message) => {
-        if (message) {
+
+
+    const sendMessage = (message, media = null, reactionMessage) => {
+        if (message || media) {
+            let messageTime = (new Date()).toISOString();
 
             let updatedSendersChats = [...senderChats, {
                 message: message,
-                dateTime: (new Date()).toISOString(),
+                dateTime: messageTime,
                 sent: true,
                 received: false,
-                isSender: true
+                isSender: true,
+                reactionRequest: reactionMessage,
+                reactionReceived: false,
+                media: media
             }];
 
+            console.log(updatedSendersChats);
 
             updateSendersChats(updatedSendersChats).then(data => {
                 return setsenderChats(updatedSendersChats);
             }).then(senderSucess => {
-                return updateReceiverChats(message);
+                return updateReceiverChats(message, media, reactionMessage);
             }).catch(e => {
                 console.log(e.message);
             });
-
             return true;
         }
     }
 
     return <div className='GroupMessages-container'>
         {
-
             senderChats.map(chat => {
                 if (chat.isSender === true) {
                     return <div key={chat.dateTime} className='Group-message outgoing'>
                         {chat.message}
+                        {chat.media ? <video className='Group-message-video' controls src={chat.media}></video> : ''}
                         <div className='Group-message-time'>{new Date(chat.dateTime).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}</div>
                     </div>
                 } else {
                     return <div key={chat.dateTime} className='Group-message incoming'>
-                        {chat.message}
+                        {
+                            chat.reactionRequest ?
+                                !chat.reactionReceived ?
+                                    <div>
+                                        Reaction Requested <br />
+                                        <i className='Reaction-message-wrapper' onClick={() => recordReaction(chat)}>
+                                            Record
+                                    </i>
+                                        <i className='Reaction-message-wrapper' onClick={() => recordReaction(chat)}>
+                                            Stop
+                                    </i>
+                                    </div>
+                                    : <>
+                                        <div>
+                                            Reaction Requested <br />
+                                            <i className='Reaction-message-wrapper' onClick={() => recordReaction(chat)}>Record</i>
+                                            <i className='Reaction-message-wrapper' onClick={() => recordReaction(chat)}>Stop</i>
+                                            <br /><hr />
+                                        </div>
+                                        {chat.message}
+                                        {chat.media ? <video className='Group-message-video' controls src={chat.media}></video> : ''}
+                                    </>
+                                : <>
+                                    {chat.message}
+                                    {chat.media ? <video className='Group-message-video' controls src={chat.media}></video> : ''}
+                                </>
+                        }
                         <div className='Group-message-time'>{new Date(chat.dateTime).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}</div>
                     </div>
                 }
             })
         }
+        <div>
+            <VideoMessage showHiddenMessage={showHiddenMessage} sendMessage={sendMessage} user={props.user} className='Group-message-video' recording={recordWebcam} />
+        </div>
 
         <div ref={messagesEndRef} />
         {/* <div className='Group-info-message'>created by 5454545</div>
@@ -149,6 +223,7 @@ const GroupMessages = (props) => {
         </div> */}
 
         <SendMessage sendMessage={sendMessage} user={props.user} openedChat={props.openedChat} />
+
     </div >
 }
 export default GroupMessages;

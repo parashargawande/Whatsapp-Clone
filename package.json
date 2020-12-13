@@ -12,7 +12,10 @@
     "office-ui-fabric-react": "^7.153.4",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
+    "react-record-webcam": "0.0.10",
     "react-scripts": "4.0.1",
+    "react-video-recorder": "^3.17.1",
+    "recordrtc": "^5.6.1",
     "web-vitals": "^0.2.4"
   },
   "scripts": {

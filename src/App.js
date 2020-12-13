@@ -63,7 +63,7 @@ function App() {
     <div className="Left-Container">
       <TopLeftBar user={user} showMenu={showMenu} setShowMenu={setShowMenu} />
       
-      <Chatlist setOpenedChat={setOpenedChat} />
+      <Chatlist user={user} setOpenedChat={setOpenedChat} />
    
       <Menu setMenu={setMenu} show={showMenu} /> 
     </div>

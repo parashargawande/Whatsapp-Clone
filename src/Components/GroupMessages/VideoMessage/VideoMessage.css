@@ -1,0 +1,14 @@
+.Video-message-container{
+    position: relative;
+}
+
+.Video-message-camera{
+    width: 255px;
+    background-color: white;
+    margin-right: auto;
+}
+.Video-message-spinner{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}

@@ -20,6 +20,7 @@
     margin-top: 6px;
     font-size: smaller;
 }
+
 .Group-message{
     word-break: break-all;
     width: 40%;
@@ -30,6 +31,11 @@
     margin-top: 6px;
     width: fit-content;
     max-width: 40%;
+}
+
+.Group-message-video{
+    width: 230px;
+    padding: 3px 5px;
 }
 .incoming{
     background-color: white;
@@ -47,4 +53,20 @@
     text-align: end;
     font-size: 0.7rem;
     color: #919191;
+}
+
+.Reaction-message-wrapper{
+    text-decoration-line: underline;
+    cursor: pointer;
+    color: blue;
+    margin: 0px 10px;
+}
+.Reaction-message-wrapper:hover{
+    color: darkblue;
+}
+.Video-message-preview{
+    width: 255px;
+}
+.Video-message-camera{
+    width: 255px;
 }
