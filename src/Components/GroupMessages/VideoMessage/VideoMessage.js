@@ -19,7 +19,9 @@ const VideoMessage = (props) => {
         if (props.recording) {
             streamCamVideo();
         } else {
-            stopVideo();
+            stopVideo().then(sucess=>{
+                console.log('recording stoped');
+            });
         }
     }, [props.recording]);
 
@@ -58,38 +60,36 @@ const VideoMessage = (props) => {
                         });
                     }
                 );
-               
-                // .then(function (snapshot) {
-
-                //     console.log(snapshot.data());
-                    
-
-                // });
-            })
-
+            });
         }
     }
 
 
     const stopVideo = () => {
-        if (rtcStream) {
-            rtcStream.stopRecording(() => {
-                // rtcStream.save();
-                videoRef.current.src = videoRef.current.srcObject = null;
-                videoRef.current.muted = false;
-                videoRef.current.volume = 1;
-                videoRef.current.src = URL.createObjectURL(rtcStream.getBlob()); //rtcStream.toURL();
-                setPreviewSrc(URL.createObjectURL(rtcStream.getBlob()));
-                rtcStream.destroy();
-                setRtcStream(null);
-                setRecordingStatus('previewing');
-            });
-        }
-        if (mediaStream) {
-            const stream = mediaStream;
-            const tracks = stream.getTracks();
-            tracks.forEach(track => track.stop());
-        }
+        let resolvePromise = new Promise((resolve,reject)=>{
+            if (rtcStream) {
+                rtcStream.stopRecording(() => {
+                    // rtcStream.save();
+                    videoRef.current.src = videoRef.current.srcObject = null;
+                    videoRef.current.muted = false;
+                    videoRef.current.volume = 1;
+                    videoRef.current.src = URL.createObjectURL(rtcStream.getBlob()); //rtcStream.toURL();
+                    setPreviewSrc(URL.createObjectURL(rtcStream.getBlob()));
+                    rtcStream.destroy();
+                    setRtcStream(null);
+                    setRecordingStatus('previewing');
+                    resolve('recording stoped');
+                });
+            }else{
+                resolve('recording stoped');
+            }
+            if (mediaStream) {
+                const stream = mediaStream;
+                const tracks = stream.getTracks();
+                tracks.forEach(track => track.stop());
+            }
+        });
+        return resolvePromise;
     }
 
     const streamCamVideo = () => {
@@ -126,13 +126,13 @@ const VideoMessage = (props) => {
                 <div className="Video-message-container">
                     {showSpinner === true ?
                         <Spinner size={SpinnerSize.large} className='Video-message-spinner' /> : ''}
-                    <video muted={true} className='Video-message-camera' autoPlay={true} ref={videoRef} controls></video>
+                    <video muted={true} className='Video-message-camera' autoPlay={true} ref={videoRef} ></video>
                 </div>
                 <br />
                 {/* <button onClick={streamCamVideo}>Start streaming</button>
                 <button onClick={stopVideo}>stop streaming</button> */}
                 {showSpinner == false ?
-                    <button onClick={() => sendVideo(previewSrc)}>Send Message</button> : ''
+                    <button onClick={() => { stopVideo().then(sucess=>{sendVideo(previewSrc)})} }>Send Message</button> : ''
                 }
                 {
                     showSpinner ?
