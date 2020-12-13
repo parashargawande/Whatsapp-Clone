@@ -14,7 +14,7 @@ const GroupMessages = (props) => {
 
     const [recordWebcam, setrecordWebcam] = useState(false);
 
-    const [requestedChat,setRequestedChat] = useState(null);
+    const [requestedChat, setRequestedChat] = useState(null);
 
     const scrollToBottom = () => {
         messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
@@ -62,7 +62,7 @@ const GroupMessages = (props) => {
         });
     }
 
-    const showHiddenMessage = ()=>{
+    const showHiddenMessage = () => {
         let updatedChats = [...senderChats];
         updatedChats.forEach((chat, index) => {
             if (chat.isSender !== true) {
@@ -80,9 +80,9 @@ const GroupMessages = (props) => {
 
 
     const recordReaction = (requestedChat) => {
-        
+
         setrecordWebcam(!recordWebcam);
-        
+
         setRequestedChat(requestedChat);
     }
 
@@ -101,11 +101,13 @@ const GroupMessages = (props) => {
                 received: true,
                 isSender: false,
                 reactionRequest: reactionMessage,
+                replyTo: requestedChat,
                 reactionReceived: false,
                 media: media
             }];
 
             const postMsg = db.collection('users').doc(props.openedChat.id).collection('To').doc(props.user.uid).set({ messages: updatedReceiversChats });
+            setRequestedChat(null);
             return postMsg;
         }).catch((e) => {
             console.log(e.message);
@@ -134,6 +136,7 @@ const GroupMessages = (props) => {
                 sent: true,
                 received: false,
                 isSender: true,
+                replyTo: requestedChat,
                 reactionRequest: reactionMessage,
                 reactionReceived: false,
                 media: media
@@ -155,8 +158,15 @@ const GroupMessages = (props) => {
     return <div className='GroupMessages-container'>
         {
             senderChats.map(chat => {
+
                 if (chat.isSender === true) {
                     return <div key={chat.dateTime} className='Group-message outgoing'>
+                        {chat.replyTo ?
+                            <div className='Group-message-replyTo-sender'>
+                                {chat.replyTo.message}
+                                <div className='Group-message-time'>{new Date(chat.replyTo.dateTime).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}</div>
+                            </div>
+                            : ''}
                         {chat.message}
                         {chat.media ? <video className='Group-message-video' controls src={chat.media}></video> : ''}
                         <div className='Group-message-time'>{new Date(chat.dateTime).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}</div>
@@ -182,10 +192,19 @@ const GroupMessages = (props) => {
                                             <i className='Reaction-message-wrapper' onClick={() => recordReaction(chat)}>Stop</i>
                                             <br /><hr />
                                         </div>
+                                        {chat.replyTo ? <div className='Group-message-replyTo-receiver'>
+                                            {chat.replyTo.message}
+                                            <div className='Group-message-time'>{new Date(chat.replyTo.dateTime).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}</div>
+                                        </div> : ''}
+
                                         {chat.message}
                                         {chat.media ? <video className='Group-message-video' controls src={chat.media}></video> : ''}
                                     </>
-                                : <>
+                                : <> 
+                                    {chat.replyTo ? <div className='Group-message-replyTo-receiver'>
+                                        {chat.replyTo.message}
+                                        <div className='Group-message-time'>{new Date(chat.replyTo.dateTime).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}</div>
+                                    </div> : ''}
                                     {chat.message}
                                     {chat.media ? <video className='Group-message-video' controls src={chat.media}></video> : ''}
                                 </>

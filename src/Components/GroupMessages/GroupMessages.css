@@ -24,7 +24,7 @@
 .Group-message{
     word-break: break-all;
     width: 40%;
-    padding: 3px 12px;
+    padding: 5px 5px;
     border-radius: 8px;
     font-size: medium;
     margin-bottom: 6px;
@@ -34,8 +34,8 @@
 }
 
 .Group-message-video{
-    width: 230px;
-    padding: 3px 5px;
+    width: 100%;
+    padding: 2px 0px;
 }
 .incoming{
     background-color: white;
@@ -69,4 +69,22 @@
 }
 .Video-message-camera{
     width: 255px;
+}
+
+.Group-message-replyTo-sender{
+    border: 1px solid;
+    border-radius: 5px;
+    padding: 4px 1px;
+    font-size: small;
+    margin-bottom: 5px;
+    background-color: #bed2af;
+}
+
+.Group-message-replyTo-receiver{
+    border: 1px solid;
+    border-radius: 5px;
+    padding: 4px 1px;
+    font-size: small;
+    margin-bottom: 5px;
+    background-color:#e6e4e4;
 }

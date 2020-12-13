@@ -97,7 +97,7 @@ const VideoMessage = (props) => {
         setShowSpinner(false);
         navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.oGetUserMedia;
 
-        let constraints = { audio: true, video: { width: 1280, height: 720 } };
+        let constraints = { audio: false, video: { width: 1280, height: 720 } };
         navigator.mediaDevices
             .getUserMedia(constraints)
             .then(function (mediaStream) {
@@ -126,7 +126,7 @@ const VideoMessage = (props) => {
                 <div className="Video-message-container">
                     {showSpinner === true ?
                         <Spinner size={SpinnerSize.large} className='Video-message-spinner' /> : ''}
-                    <video className='Video-message-camera' autoPlay={true} ref={videoRef} controls></video>
+                    <video muted={true} className='Video-message-camera' autoPlay={true} ref={videoRef} controls></video>
                 </div>
                 <br />
                 {/* <button onClick={streamCamVideo}>Start streaming</button>
