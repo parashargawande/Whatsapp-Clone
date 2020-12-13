@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './Registration.css';
 
 export const Registration = (props) => {

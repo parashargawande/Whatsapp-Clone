@@ -4,28 +4,31 @@ import { initializeIcons } from '@uifabric/icons';
 import Chatlist from './Components/Chatlist/Chatlist';
 import TopRightBar from './Components/TopRightBar/TopRightBar';
 import GroupMessages from './Components/GroupMessages/GroupMessages';
-import SendMessage from './Components/GroupMessages/SendMessage/SendMessage';
 import { useEffect, useState } from 'react';
 import firebase from './Firebase';
 import { Menu } from './Components/Menu/Menu';
 import { NewGroupSlider } from './Components/NewGroupSlider/NewGroupSlider';
 import { Authentication } from './Components/Authentication/Authentication';
+import Loader from './Components/Loader/Loader';
 
 function App() {
 
   initializeIcons();
-
   const [user, setUser] = useState(null);
   const [openedChat, setOpenedChat] = useState(null);
   const [showMenu, setShowMenu] = useState(false);
   const [newGroupSlider, setNewGroupSlider] = useState(false);
+  const [showLoader, setShowLoader] = useState(true);
 
   useEffect(() => {
     firebase.auth().onAuthStateChanged(function (user) {
       if (user) {
+        console.log(user);
         setUser(user);
+        setShowLoader(false);
       } else {
         setUser(null);
+        setShowLoader(false);
       }
     });
   }, [user]);
@@ -62,20 +65,20 @@ function App() {
   let body = <>
     <div className="Left-Container">
       <TopLeftBar user={user} showMenu={showMenu} setShowMenu={setShowMenu} />
-      
+
       <Chatlist user={user} setOpenedChat={setOpenedChat} />
-   
-      <Menu setMenu={setMenu} show={showMenu} /> 
+
+      <Menu setMenu={setMenu} show={showMenu} />
     </div>
 
     <NewGroupSlider show={newGroupSlider} />
     {openedChat ?
       <div className="Right-Container">
-        
+
         <TopRightBar user={user} openedChat={openedChat} />
 
         <GroupMessages user={user} openedChat={openedChat} />
-        
+
       </div> :
       <div className="Right-Container">
       </div>
@@ -86,10 +89,10 @@ function App() {
 
   return <div className="App">
     <div onClick={() => closeAllMenu()} className="Container">
-      {user === null ?
-        <Authentication setUser={setUser} /> :
-        body
-      }
+      {showLoader ? <Loader label='loading...' />
+        : user === null ?
+          <Authentication setUser={setUser} /> :
+          body}
     </div>
   </div>
 }

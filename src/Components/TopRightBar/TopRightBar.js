@@ -3,8 +3,6 @@ import './TopRightBar.css';
 
 const TopRightBar = (props) => {
 
-    // console.log(props.openedChat);
-
     return <React.Fragment>
         {props.openedChat ?
             <div className='TopRightBar-container'>

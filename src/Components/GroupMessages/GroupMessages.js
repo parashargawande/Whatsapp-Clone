@@ -2,25 +2,22 @@ import React, { useEffect, useRef, useState } from 'react';
 import './GroupMessages.css';
 import firebase from '../../Firebase';
 import SendMessage from './SendMessage/SendMessage';
-import { useRecordWebcam } from 'react-record-webcam'
-import RecordRTC from 'recordrtc';
 import VideoMessage from './VideoMessage/VideoMessage';
+import Loader from '../Loader/Loader';
 
 
 const GroupMessages = (props) => {
 
     const [senderChats, setsenderChats] = useState([]);
     const messagesEndRef = useRef(null);
-
+    const [showLoader,setShowLoader] = useState(false);
     const [recordWebcam, setrecordWebcam] = useState(false);
 
     const [requestedChat, setRequestedChat] = useState(null);
 
     const scrollToBottom = () => {
-        messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
+        messagesEndRef.current.scrollIntoView({ behavior: "auto", block: "end" })
     }
-
-
 
     useEffect(() => {
         console.log('[GroupMessages.js] setting observer');
@@ -46,6 +43,7 @@ const GroupMessages = (props) => {
     }, [props.openedChat.id]);
 
     const getSendersChats = () => {
+        setShowLoader(true);
         const senderSnapshot = firebase.firestore().collection('users').doc(props.user.uid).collection('To').doc(props.openedChat.id).get();
         senderSnapshot.then((snap) => {
             let chats = snap.data();
@@ -56,9 +54,11 @@ const GroupMessages = (props) => {
             } else {
                 setsenderChats([]);
             }
+            setShowLoader(false);
         }).catch((e) => {
             console.log(e.message);
             setsenderChats([]);
+            setShowLoader(false);
         });
     }
 
@@ -116,12 +116,6 @@ const GroupMessages = (props) => {
     const updateSendersChats = (updatedSendersChats) => {
         const sendMsg = db.collection('users').doc(props.user.uid).collection('To').doc(props.openedChat.id).set({ messages: updatedSendersChats });
         return sendMsg;
-
-        sendMsg.then(data => {
-            setsenderChats(updatedSendersChats);
-        }).catch(e => {
-            console.log(e.message);
-        });
     }
 
 
@@ -155,70 +149,73 @@ const GroupMessages = (props) => {
         }
     }
 
-    return <div className='GroupMessages-container'>
-        {
-            senderChats.map(chat => {
+    let messages = showLoader ? <Loader label='loading...' />:
+     senderChats.map(chat => {
+        if (chat.isSender === true) {
+            return <div key={chat.dateTime} className='Group-message outgoing'>
+                {chat.replyTo ?
+                    <div className='Group-message-replyTo-sender'>
+                        {chat.replyTo.message}
+                        <div className='Group-message-time'>{new Date(chat.replyTo.dateTime).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}</div>
+                    </div>
+                    : ''}
+                {chat.message}
+                {chat.media ? <video className='Group-message-video' controls src={chat.media}></video> : ''}
+                <div className='Group-message-time'>{new Date(chat.dateTime).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}</div>
+            </div>
+        } else {
+            return <div key={chat.dateTime} className='Group-message incoming'>
+                {
+                    chat.reactionRequest ?
+                        !chat.reactionReceived ?
+                            <div>
+                                Reaction Requested <br />
+                                <i className='Reaction-message-wrapper' onClick={() => recordReaction(chat)}>
+                                    Record
+                            </i>
+                                <i className='Reaction-message-wrapper' onClick={() => recordReaction(chat)}>
+                                    Stop
+                            </i>
+                            </div>
+                            : <>
+                                <div>
+                                    Reaction Requested <br />
+                                    <i className='Reaction-message-wrapper' onClick={() => recordReaction(chat)}>Record</i>
+                                    <i className='Reaction-message-wrapper' onClick={() => recordReaction(chat)}>Stop</i>
+                                    <br /><hr />
+                                </div>
+                                {chat.replyTo ? <div className='Group-message-replyTo-receiver'>
+                                    {chat.replyTo.message}
+                                    <div className='Group-message-time'>{new Date(chat.replyTo.dateTime).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}</div>
+                                </div> : ''}
 
-                if (chat.isSender === true) {
-                    return <div key={chat.dateTime} className='Group-message outgoing'>
-                        {chat.replyTo ?
-                            <div className='Group-message-replyTo-sender'>
+                                {chat.message}
+                                {chat.media ? <video className='Group-message-video' controls src={chat.media}></video> : ''}
+                            </>
+                        : <>
+                            {chat.replyTo ? <div className='Group-message-replyTo-receiver'>
                                 {chat.replyTo.message}
                                 <div className='Group-message-time'>{new Date(chat.replyTo.dateTime).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}</div>
-                            </div>
-                            : ''}
-                        {chat.message}
-                        {chat.media ? <video className='Group-message-video' controls src={chat.media}></video> : ''}
-                        <div className='Group-message-time'>{new Date(chat.dateTime).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}</div>
-                    </div>
-                } else {
-                    return <div key={chat.dateTime} className='Group-message incoming'>
-                        {
-                            chat.reactionRequest ?
-                                !chat.reactionReceived ?
-                                    <div>
-                                        Reaction Requested <br />
-                                        <i className='Reaction-message-wrapper' onClick={() => recordReaction(chat)}>
-                                            Record
-                                    </i>
-                                        <i className='Reaction-message-wrapper' onClick={() => recordReaction(chat)}>
-                                            Stop
-                                    </i>
-                                    </div>
-                                    : <>
-                                        <div>
-                                            Reaction Requested <br />
-                                            <i className='Reaction-message-wrapper' onClick={() => recordReaction(chat)}>Record</i>
-                                            <i className='Reaction-message-wrapper' onClick={() => recordReaction(chat)}>Stop</i>
-                                            <br /><hr />
-                                        </div>
-                                        {chat.replyTo ? <div className='Group-message-replyTo-receiver'>
-                                            {chat.replyTo.message}
-                                            <div className='Group-message-time'>{new Date(chat.replyTo.dateTime).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}</div>
-                                        </div> : ''}
-
-                                        {chat.message}
-                                        {chat.media ? <video className='Group-message-video' controls src={chat.media}></video> : ''}
-                                    </>
-                                : <> 
-                                    {chat.replyTo ? <div className='Group-message-replyTo-receiver'>
-                                        {chat.replyTo.message}
-                                        <div className='Group-message-time'>{new Date(chat.replyTo.dateTime).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}</div>
-                                    </div> : ''}
-                                    {chat.message}
-                                    {chat.media ? <video className='Group-message-video' controls src={chat.media}></video> : ''}
-                                </>
-                        }
-                        <div className='Group-message-time'>{new Date(chat.dateTime).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}</div>
-                    </div>
+                            </div> : ''}
+                            {chat.message}
+                            {chat.media ? <video className='Group-message-video' controls src={chat.media}></video> : ''}
+                        </>
                 }
-            })
+                <div className='Group-message-time'>{new Date(chat.dateTime).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}</div>
+            </div>
         }
-        <div>
-            <VideoMessage showHiddenMessage={showHiddenMessage} sendMessage={sendMessage} user={props.user} className='Group-message-video' recording={recordWebcam} />
-        </div>
+    })
 
+    return <div className='GroupMessages-container'>
+        {
+            messages
+        }
+        <VideoMessage showHiddenMessage={showHiddenMessage} sendMessage={sendMessage} user={props.user} className='Group-message-video' recording={recordWebcam} />
         <div ref={messagesEndRef} />
+        <SendMessage sendMessage={sendMessage} user={props.user} openedChat={props.openedChat} />
+
+
+
         {/* <div className='Group-info-message'>created by 5454545</div>
         <div className='Group-info-message'>created by 5454545</div>
         <div className='Group-info-message'>created by 5454545</div>
@@ -240,9 +237,6 @@ const GroupMessages = (props) => {
             c
             <div className='Group-message-time'>5.00PM</div>
         </div> */}
-
-        <SendMessage sendMessage={sendMessage} user={props.user} openedChat={props.openedChat} />
-
     </div >
 }
 export default GroupMessages;

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import './SendMessage.css';
-import firebase from '../../../Firebase';
 
 const SendMessage = (props) => {
 
@@ -27,15 +26,6 @@ const SendMessage = (props) => {
 
     console.log("[SendMessage] rendered");
     return <>
-        {/* <div className='Message-Type-container'>
-            <div className='Message-type-item'>
-                <button className='Sendmessage-btn'>Reaction Message</button>
-            </div>
-            <div className='Message-type-item'>
-                <button className='Sendmessage-btn'>Simple Message</button>
-            </div>
-        </div> */}
-
         <div className='SendMessage-container'>
             <form className='SendMessage-container' onSubmit={(e) => sendMessage(e)}>
                 <div className='Sendmessage-icon-container'>
@@ -53,10 +43,6 @@ const SendMessage = (props) => {
                     </button>
                 </div>
             </form>
-
-            {/* <div>attac</div>
-        <div>input</div>
-        <div>audio</div> */}
         </div>
     </>
 }

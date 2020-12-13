@@ -1,12 +1,10 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { useRecordWebcam } from 'react-record-webcam'
 import RecordRTC from 'recordrtc';
 import firebase from '../../../Firebase';
 import { Spinner, SpinnerSize, ProgressIndicator } from 'office-ui-fabric-react';
 import './VideoMessage.css';
 
 const VideoMessage = (props) => {
-    const recordWebcam = useRecordWebcam();
     const videoRef = useRef(null);
     const [rtcStream, setRtcStream] = useState(null);
     const [mediaStream, setMediaStream] = useState(null);
@@ -44,8 +42,6 @@ const VideoMessage = (props) => {
                 let task = userStorageRef.put(blob);
                 task.on('state_changed',
                     function progress(snapshot) {
-                        let percentage = (snapshot.bytesTransfered / snapshot.totalBytes);
-                        console.log(snapshot);
                         setUploadProgress(snapshot.bytesTransferred / snapshot.totalBytes);
                     },
                     function error(err) {
@@ -69,7 +65,6 @@ const VideoMessage = (props) => {
         let resolvePromise = new Promise((resolve,reject)=>{
             if (rtcStream) {
                 rtcStream.stopRecording(() => {
-                    // rtcStream.save();
                     videoRef.current.src = videoRef.current.srcObject = null;
                     videoRef.current.muted = false;
                     videoRef.current.volume = 1;
@@ -113,7 +108,6 @@ const VideoMessage = (props) => {
                 };
                 setRecordingStatus('recording');
                 props.showHiddenMessage();
-                //recordVideo();
             })
             .catch(function (err) {
                 console.log(err.name + ": " + err.message);
@@ -129,9 +123,8 @@ const VideoMessage = (props) => {
                     <video muted={true} className='Video-message-camera' autoPlay={true} ref={videoRef} ></video>
                 </div>
                 <br />
-                {/* <button onClick={streamCamVideo}>Start streaming</button>
-                <button onClick={stopVideo}>stop streaming</button> */}
-                {showSpinner == false ?
+
+                {showSpinner === false ?
                     <button onClick={() => { stopVideo().then(sucess=>{sendVideo(previewSrc)})} }>Send Message</button> : ''
                 }
                 {
@@ -139,13 +132,6 @@ const VideoMessage = (props) => {
                         <ProgressIndicator percentComplete={uploadProgress} /> : ''
                 }
             </div>
-            {/* <p>Camera status: {recordWebcam.status}</p>
-            <button onClick={recordWebcam.start}>Start recording</button>
-            <button onClick={recordWebcam.stop}>Stop recording</button>
-            <button onClick={recordWebcam.retake}>Retake recording</button>
-            <button onClick={recordWebcam.download}>Download recording</button>
-            <video ref={recordWebcam.webcamRef} autoPlay muted />
-            <video ref={recordWebcam.previewRef} autoPlay muted loop /> */}
         </div>
     )
 }
