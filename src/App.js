@@ -7,9 +7,10 @@ import GroupMessages from './Components/GroupMessages/GroupMessages';
 import { useEffect, useState } from 'react';
 import firebase from './Firebase';
 import { Menu } from './Components/Menu/Menu';
-import { NewGroupSlider } from './Components/NewGroupSlider/NewGroupSlider';
 import { Authentication } from './Components/Authentication/Authentication';
 import Loader from './Components/Loader/Loader';
+import LeftSlider from './Components/LeftSlider/LeftSlider';
+import UserDetails from './Components/UserDetails/UserDetails';
 
 function App() {
 
@@ -17,15 +18,26 @@ function App() {
   const [user, setUser] = useState(null);
   const [openedChat, setOpenedChat] = useState(null);
   const [showMenu, setShowMenu] = useState(false);
-  const [newGroupSlider, setNewGroupSlider] = useState(false);
+  const [showLeftSlider, setShowLeftSlider] = useState(false);
   const [showLoader, setShowLoader] = useState(true);
+  const [leftSliderContent, setLeftSliderContent] = useState(null);
+  const [userDetails,setUserDetails] = useState(null);
 
   useEffect(() => {
     firebase.auth().onAuthStateChanged(function (user) {
       if (user) {
         console.log(user);
         setUser(user);
-        setShowLoader(false);
+        const snapshot = firebase.firestore().collection('users').doc(user.uid).get();
+        snapshot.then((raw) => {
+          let userData= raw.data();
+          setUserDetails({...user,name:userData.name});
+          setShowLoader(false);
+        }).catch(err => {
+          console.log(err.message);
+          setShowLoader(false);
+        });
+
       } else {
         setUser(null);
         setShowLoader(false);
@@ -49,35 +61,43 @@ function App() {
     if (showMenu) {
       setShowMenu(false);
     }
-    if (newGroupSlider) {
-      setNewGroupSlider(false);
+    if (showLeftSlider) {
+      setShowLeftSlider(false);
     }
   }
   const setMenu = (menu) => {
-    if (menu === "New-Group" && !newGroupSlider) {
-      setNewGroupSlider(true);
+    if (menu === "New-Group" && !showLeftSlider) {
+      let newGroupContent = <div>new group add</div>
+      setLeftSliderContent(newGroupContent);
+      setShowLeftSlider(true);
     }
-    else if (menu === "Logout" && !newGroupSlider) {
+    else if (menu === "Logout" && !showLeftSlider) {
       logoutUser();
     }
+  }
+  const showUserProfile = () => {
+    let userContent = <UserDetails user={userDetails} />
+    setLeftSliderContent(userContent);
+    setShowLeftSlider(true);
   }
 
   let body = <>
     <div className="Left-Container">
-      <TopLeftBar user={user} showMenu={showMenu} setShowMenu={setShowMenu} />
+      <TopLeftBar showUserProfile={showUserProfile} user={userDetails} showMenu={showMenu} setShowMenu={setShowMenu} />
 
-      <Chatlist user={user} setOpenedChat={setOpenedChat} />
+      <Chatlist user={userDetails} setOpenedChat={setOpenedChat} />
 
       <Menu setMenu={setMenu} show={showMenu} />
     </div>
 
-    <NewGroupSlider show={newGroupSlider} />
+    <LeftSlider show={showLeftSlider} innerComponent={leftSliderContent} />
+
     {openedChat ?
       <div className="Right-Container">
 
-        <TopRightBar user={user} openedChat={openedChat} />
+        <TopRightBar user={userDetails} openedChat={openedChat} />
 
-        <GroupMessages user={user} openedChat={openedChat} />
+        <GroupMessages user={userDetails} openedChat={openedChat} />
 
       </div> :
       <div className="Right-Container">

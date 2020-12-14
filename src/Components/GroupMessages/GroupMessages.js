@@ -7,7 +7,6 @@ import Loader from '../Loader/Loader';
 
 
 const GroupMessages = (props) => {
-
     const [senderChats, setsenderChats] = useState([]);
     const messagesEndRef = useRef(null);
     const [showLoader,setShowLoader] = useState(false);
