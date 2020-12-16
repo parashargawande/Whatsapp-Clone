@@ -159,7 +159,7 @@ const GroupMessages = (props) => {
                     </div>
                     : ''}
                 {chat.message}
-                {chat.media ? <video className='Group-message-video' controls src={chat.media}></video> : ''}
+                {chat.media ? <video className='Group-message-video' preload='none' controls src={chat.media}></video> : ''}
                 <div className='Group-message-time'>{new Date(chat.dateTime).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}</div>
             </div>
         } else {
@@ -189,7 +189,7 @@ const GroupMessages = (props) => {
                                 </div> : ''}
 
                                 {chat.message}
-                                {chat.media ? <video className='Group-message-video' controls src={chat.media}></video> : ''}
+                                {chat.media ? <video className='Group-message-video' preload='none' controls src={chat.media}></video> : ''}
                             </>
                         : <>
                             {chat.replyTo ? <div className='Group-message-replyTo-receiver'>
@@ -197,7 +197,7 @@ const GroupMessages = (props) => {
                                 <div className='Group-message-time'>{new Date(chat.replyTo.dateTime).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}</div>
                             </div> : ''}
                             {chat.message}
-                            {chat.media ? <video className='Group-message-video' controls src={chat.media}></video> : ''}
+                            {chat.media ? <video className='Group-message-video' preload='none' controls src={chat.media}></video> : ''}
                         </>
                 }
                 <div className='Group-message-time'>{new Date(chat.dateTime).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}</div>
